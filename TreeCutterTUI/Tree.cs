@@ -6,6 +6,7 @@ namespace TreeCutterTUI;
 public class Tree : IEnumerable<string>
 {
     private int _treeSegmentCount;
+    private Direction _characterDirection = Direction.Right;
     private Queue<(Direction, string)> _treeSegments = new();
     private Random _random = new();
 
@@ -16,14 +17,18 @@ public class Tree : IEnumerable<string>
         InitTree();
     }
 
-    public bool CheckMove(Direction direction) =>
-        _treeSegments.First().Item1 switch
+    public bool CheckMove(Direction direction)
+    {
+        _characterDirection = direction;
+        return _treeSegments.First().Item1 switch
         {
             Direction.Right => direction == Direction.Left,
             Direction.Left => direction == Direction.Right,
             Direction.None => true,
             _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
         };
+    }
+        
 
     public void InitTree()
     {
@@ -47,7 +52,7 @@ public class Tree : IEnumerable<string>
         {
             stringBuilder.Append($"{segment.Item2}\n");
         }
-        stringBuilder.Append(ASCIIArt.TreeSegmentCharacter);
+        stringBuilder.Append(_characterDirection == Direction.Right ? ASCIIArt.TreeSegmentCharacterRight : ASCIIArt.TreeSegmentCharacterLeft);
         
         return stringBuilder.ToString();
     }

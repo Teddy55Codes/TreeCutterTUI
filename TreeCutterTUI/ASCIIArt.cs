@@ -35,12 +35,19 @@ public static class ASCIIArt
                                                {TreeLayerNoBranch}
                                                {TreeLayerNoBranch}
                                                """;
-
-    public const string TreeSegmentCharacter = $"""
-                                                {TreeLayerNoBranch}
-                                                {TreeLayerNoBranch}
-                                                {NoBranch}{Trunck}{CharacterHead}
-                                                {NoBranch}{Trunck}{CharacterTorso}
-                                                {NoBranch}{Trunck}{CharacterLegs}
-                                                """;
+    
+    public const string TreeSegmentCharacterRight = $"""
+                                                     {TreeLayerNoBranch}
+                                                     {TreeLayerNoBranch}
+                                                     {NoBranch}{Trunck}  {CharacterHead}
+                                                     {NoBranch}{Trunck}  {CharacterTorso}
+                                                     {NoBranch}{Trunck}  {CharacterLegs}
+                                                     """;
+    public const string TreeSegmentCharacterLeft = $"""
+                                                    {TreeLayerNoBranch}
+                                                    {TreeLayerNoBranch}
+                                                    {CharacterHead}  {Trunck}{NoBranch}
+                                                    {CharacterTorso}  {Trunck}{NoBranch}
+                                                    {CharacterLegs}  {Trunck}{NoBranch}
+                                                    """;
 }
