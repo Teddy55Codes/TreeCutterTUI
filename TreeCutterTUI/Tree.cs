@@ -6,8 +6,8 @@ namespace TreeCutterTUI;
 public class Tree : IEnumerable<string>
 {
     private int _treeSegmentCount;
-    private Queue<string> _treeSegments = new Queue<string>();
-    private Random _random = new Random();
+    private Queue<(Direction, string)> _treeSegments = new();
+    private Random _random = new();
 
     public Tree(int height)
     {
@@ -15,7 +15,16 @@ public class Tree : IEnumerable<string>
         _treeSegmentCount = height;
         InitTree();
     }
-    
+
+    public bool CheckMove(Direction direction) =>
+        _treeSegments.First().Item1 switch
+        {
+            Direction.Right => direction == Direction.Left,
+            Direction.Left => direction == Direction.Right,
+            Direction.None => true,
+            _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
+        };
+
     public void InitTree()
     {
         _treeSegments.Clear();
@@ -25,7 +34,7 @@ public class Tree : IEnumerable<string>
         }
     }
     
-    public string MoveTree()
+    public (Direction, string) MoveTree()
     {
         AddTreeSegment();
         return _treeSegments.Dequeue();
@@ -36,53 +45,16 @@ public class Tree : IEnumerable<string>
         var stringBuilder = new StringBuilder();
         foreach (var segment in _treeSegments.Reverse())
         {
-            stringBuilder.Append($"{segment}\n");
+            stringBuilder.Append($"{segment.Item2}\n");
         }
-        stringBuilder.Append($"""
-                              {ASCIIArt.TreeSegmentNoBranch}
-                              {ASCIIArt.TreeSegmentNoBranch}
-                              {ASCIIArt.NoBranch}{ASCIIArt.Trunck}{ASCIIArt.CharacterHead}
-                              {ASCIIArt.NoBranch}{ASCIIArt.Trunck}{ASCIIArt.CharacterTorso}
-                              {ASCIIArt.NoBranch}{ASCIIArt.Trunck}{ASCIIArt.CharacterLegs}
-                              """);
+        stringBuilder.Append(ASCIIArt.TreeSegmentCharacter);
         
         return stringBuilder.ToString();
     }
 
-    private void AddTreeSegment()
-    {
-        if (_random.Next(2) == 0)
-        {
-            _treeSegments.Enqueue($"""
-                                       {ASCIIArt.TreeSegmentNoBranch}
-                                       {ASCIIArt.TreeSegmentNoBranch}
-                                       {ASCIIArt.TreeSegmentNoBranch}
-                                       {ASCIIArt.TreeSegmentNoBranch}
-                                       {ASCIIArt.TreeSegmentBranchLeft}
-                                       """);
-        }
-        else
-        {
-            _treeSegments.Enqueue($"""
-                                       {ASCIIArt.TreeSegmentNoBranch}
-                                       {ASCIIArt.TreeSegmentNoBranch}
-                                       {ASCIIArt.TreeSegmentNoBranch}
-                                       {ASCIIArt.TreeSegmentNoBranch}
-                                       {ASCIIArt.TreeSegmentBranchRight}
-                                       """);
-        }
-    }
+    private void AddTreeSegment() => _treeSegments.Enqueue(_random.Next(2) == 0 ? (Direction.Left, ASCIIArt.TreeSegmentBranchLeft) : (Direction.Right, ASCIIArt.TreeSegmentBranchRight));
 
-    private void AddNoBranchTreeSegment()
-    {
-        _treeSegments.Enqueue($"""
-                               {ASCIIArt.TreeSegmentNoBranch}
-                               {ASCIIArt.TreeSegmentNoBranch}
-                               {ASCIIArt.TreeSegmentNoBranch}
-                               {ASCIIArt.TreeSegmentNoBranch}
-                               {ASCIIArt.TreeSegmentNoBranch}
-                               """);
-    }
+    private void AddNoBranchTreeSegment() => _treeSegments.Enqueue((Direction.None, ASCIIArt.TreeSegmentNoBranch));
 
     public IEnumerator<string> GetEnumerator() => new Enumerator(this);
 
