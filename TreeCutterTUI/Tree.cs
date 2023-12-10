@@ -20,16 +20,21 @@ public class Tree : IEnumerable<string>
     public bool CheckMove(Direction direction)
     {
         _characterDirection = direction;
-        return _treeSegments.First().Item1 switch
+        var enumerator = _treeSegments.GetEnumerator();
+        enumerator.MoveNext();
+        var currentSegment = enumerator.Current.Item1;
+        enumerator.MoveNext();
+        var nextSegment = enumerator.Current.Item1;
+        enumerator.Dispose();
+        
+        return direction switch
         {
-            Direction.Right => direction == Direction.Left,
-            Direction.Left => direction == Direction.Right,
-            Direction.None => true,
+            Direction.Right => currentSegment is Direction.Left or Direction.None && nextSegment is Direction.Left or Direction.None,
+            Direction.Left => currentSegment is Direction.Right or Direction.None && nextSegment is Direction.Right or Direction.None,
             _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
         };
     }
-        
-
+    
     public void InitTree()
     {
         _treeSegments.Clear();
@@ -48,16 +53,63 @@ public class Tree : IEnumerable<string>
     public override string ToString()
     {
         var stringBuilder = new StringBuilder();
+        var i = 0;
         foreach (var segment in _treeSegments.Reverse())
         {
+            if (i == _treeSegmentCount-1) break;
             stringBuilder.Append($"{segment.Item2}\n");
+            i++;
         }
-        stringBuilder.Append(_characterDirection == Direction.Right ? ASCIIArt.TreeSegmentCharacterRight : ASCIIArt.TreeSegmentCharacterLeft);
+        var lowestSegmentDirection = _treeSegments.First().Item1;
+        
+        switch (lowestSegmentDirection)
+        {
+            case Direction.Left:
+                stringBuilder.Append(ASCIIArt.TreeSegmentCharacterRightWithBranch);
+                break;
+            case Direction.Right:
+                stringBuilder.Append(ASCIIArt.TreeSegmentCharacterLeftWithBranch);
+                break;
+            case Direction.None:
+                stringBuilder.Append(_characterDirection == Direction.Right ? ASCIIArt.TreeSegmentCharacterRight : ASCIIArt.TreeSegmentCharacterLeft);
+                break;
+        }
         
         return stringBuilder.ToString();
     }
 
-    private void AddTreeSegment() => _treeSegments.Enqueue(_random.Next(2) == 0 ? (Direction.Left, ASCIIArt.TreeSegmentBranchLeft) : (Direction.Right, ASCIIArt.TreeSegmentBranchRight));
+    private void AddTreeSegment()
+    {
+        if (_treeSegments.Count == 0)
+        {
+            _treeSegments.Enqueue((Direction.None, ASCIIArt.TreeSegmentNoBranch));
+            return;
+        }
+        var lastSegmentDirection = _treeSegments.Last().Item1;
+        switch (lastSegmentDirection)
+        {
+            case Direction.None:
+                switch (_random.Next(5))
+                {
+                    case 0 or 1:
+                        _treeSegments.Enqueue((Direction.Left, ASCIIArt.TreeSegmentBranchLeft));
+                        break;
+                    case 2 or 3:
+                        _treeSegments.Enqueue((Direction.Right, ASCIIArt.TreeSegmentBranchRight));
+                        break;
+                    case 4:
+                        _treeSegments.Enqueue((Direction.None, ASCIIArt.TreeSegmentNoBranch));
+                        break;
+                }
+                break;
+            case Direction.Right:
+                _treeSegments.Enqueue(_random.Next(2) == 0 ? (Direction.None, ASCIIArt.TreeSegmentNoBranch) : (Direction.Right, ASCIIArt.TreeSegmentBranchRight));
+                break;
+            case Direction.Left:
+                _treeSegments.Enqueue(_random.Next(2) == 0 ? (Direction.None, ASCIIArt.TreeSegmentNoBranch) : (Direction.Left, ASCIIArt.TreeSegmentBranchLeft));
+                break;
+        }
+    }
 
     private void AddNoBranchTreeSegment() => _treeSegments.Enqueue((Direction.None, ASCIIArt.TreeSegmentNoBranch));
 

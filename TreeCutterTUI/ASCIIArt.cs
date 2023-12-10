@@ -18,15 +18,15 @@ public static class ASCIIArt
                                                  {TreeLayerNoBranch}
                                                  {TreeLayerNoBranch}
                                                  {TreeLayerNoBranch}
-                                                 {TreeLayerNoBranch}
                                                  {TreeLayerBranchLeft}
+                                                 {TreeLayerNoBranch}
                                                  """;
     public const string TreeSegmentBranchRight = $"""
                                                  {TreeLayerNoBranch}
                                                  {TreeLayerNoBranch}
                                                  {TreeLayerNoBranch}
-                                                 {TreeLayerNoBranch}
                                                  {TreeLayerBranchRight}
+                                                 {TreeLayerNoBranch}
                                                  """;
     public const string TreeSegmentNoBranch = $"""
                                                {TreeLayerNoBranch}
@@ -50,4 +50,18 @@ public static class ASCIIArt
                                                     {CharacterTorso}  {Trunck}{NoBranch}
                                                     {CharacterLegs}  {Trunck}{NoBranch}
                                                     """;
+    public const string TreeSegmentCharacterRightWithBranch = $"""
+                                                               {TreeLayerNoBranch}
+                                                               {TreeLayerNoBranch}
+                                                               {NoBranch}{Trunck}  {CharacterHead}
+                                                               {Branch}{Trunck}  {CharacterTorso}
+                                                               {NoBranch}{Trunck}  {CharacterLegs}
+                                                               """;
+    public const string TreeSegmentCharacterLeftWithBranch = $"""
+                                                              {TreeLayerNoBranch}
+                                                              {TreeLayerNoBranch}
+                                                              {CharacterHead}  {Trunck}{NoBranch}
+                                                              {CharacterTorso}  {Trunck}{Branch}
+                                                              {CharacterLegs}  {Trunck}{NoBranch}
+                                                              """;
 }
