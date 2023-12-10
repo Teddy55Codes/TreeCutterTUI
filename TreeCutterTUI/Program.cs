@@ -1,4 +1,5 @@
-﻿using TreeCutterTUI;
+﻿using Spectre.Console;
+using TreeCutterTUI;
 
 public class Program
 {
@@ -6,9 +7,9 @@ public class Program
     {
         var tree = new TreeCutterTUI.Tree(5);
 
-        foreach (var segment in tree)
+        foreach (string segment in tree)
         {
-            Console.WriteLine(segment);
+            AnsiConsole.MarkupLine(segment);
             bool? res = null;
             while (res == null)
             {
@@ -19,7 +20,13 @@ public class Program
                     _ => null
                 };
             }
-            if (!(bool)res) break;
+            
+            if ((bool)res) continue;
+            AnsiConsole.Clear();
+            AnsiConsole.MarkupLine("[red]You Lost :([/]");
+            break;
         }
+
+        Console.ReadKey();
     }
 }

@@ -2,12 +2,12 @@
 
 public static class ASCIIArt
 {
-    public const string Trunck = "|     |";
-    public const string Branch = "-----";
+    public const string Trunck = "[rosybrown]|     |[/]";
+    public const string Branch = "[rosybrown]-----[/]";
     public const string NoBranch = "     ";
-    public const string CharacterHead = " o ";
-    public const string CharacterTorso = @"/|\";
-    public const string CharacterLegs = @"/ \";
+    public const string CharacterHead = "[tan] o [/]";
+    public const string CharacterTorso = @"[darkred_1]/|\[/]";
+    public const string CharacterLegs = @"[deepskyblue4_1]/ \[/]";
     public const string Character = $"{CharacterHead}\n{CharacterTorso}\n{CharacterLegs}";
 
     public const string TreeLayerBranchLeft = Branch + Trunck + NoBranch;
