@@ -6,10 +6,10 @@ public class Program
     public static void Main(string[] args)
     {
         var tree = new TreeCutterTUI.Tree(5);
-
         foreach (string segment in tree)
         {
-            AnsiConsole.MarkupLine(segment);
+            AnsiConsole.Cursor.SetPosition(0, 0);
+            AnsiConsole.Markup(segment);
             bool? res = null;
             while (res == null)
             {
@@ -20,13 +20,11 @@ public class Program
                     _ => null
                 };
             }
-            
+
             if ((bool)res) continue;
             AnsiConsole.Clear();
             AnsiConsole.MarkupLine("[red]You Lost :([/]");
-            break;
+            Console.ReadKey();
         }
-
-        Console.ReadKey();
     }
 }
