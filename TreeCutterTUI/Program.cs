@@ -1,11 +1,27 @@
 ﻿using Spectre.Console;
-using TreeCutterTUI;
 
-public class Program
+namespace TreeCutterTUI;
+
+public abstract class Program
 {
-    public static void Main(string[] args)
+    public static void Main()
     {
-        var tree = new TreeCutterTUI.Tree(5);
+        while (true)
+        {
+            GameLoop();
+            AnsiConsole.Clear();
+            var choice = AnsiConsole.Prompt(
+                new SelectionPrompt<string>() { HighlightStyle = new Style(Color.Green) }
+                    .Title("[red]You Lost :([/]")
+                    .PageSize(3)
+                    .AddChoices("Play Again", "Quit"));
+            if (choice == "Quit") break;
+        }
+    }
+
+    private static void GameLoop()
+    {
+        var tree = new Tree(5);
         foreach (string segment in tree)
         {
             AnsiConsole.Cursor.SetPosition(0, 0);
@@ -20,11 +36,7 @@ public class Program
                     _ => null
                 };
             }
-
-            if ((bool)res) continue;
-            AnsiConsole.Clear();
-            AnsiConsole.MarkupLine("[red]You Lost :([/]");
-            Console.ReadKey();
+            if (!(bool)res) break;
         }
     }
 }
