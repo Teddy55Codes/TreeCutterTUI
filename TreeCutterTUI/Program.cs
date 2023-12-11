@@ -4,8 +4,17 @@ namespace TreeCutterTUI;
 
 public abstract class Program
 {
-    public static void Main()
+    private const int TreeHeight = 5;
+    private static int TreeHeightInLines = TreeHeight * 5;
+    private static int _score;
+    private static bool _progressStopped;
+    private static int _currentHealth;
+    private static object _cursorLock = new();
+    private static CancellationTokenSource _cancellationTokenSource;
+    
+    public static async Task Main()
     {
+        AnsiConsole.Cursor.Hide();
         AnsiConsole.Write(
             new FigletText("Wood Cutter TUI")
                 .Centered()
@@ -15,35 +24,90 @@ public abstract class Program
         
         while (true)
         {
-            GameLoop();
-            AnsiConsole.Clear();
-            var choice = AnsiConsole.Prompt(
-                new SelectionPrompt<string>() { HighlightStyle = new Style(Color.Green) }
-                    .Title("[red]You Lost :([/]")
-                    .PageSize(3)
-                    .AddChoices("Play Again", "Quit"));
+            _score = 0;
+            _progressStopped = false;
+            _currentHealth = 100;
+            Task.Run(HealthBar);
+            await GameLoop();
+            string choice;
+            lock (_cursorLock)
+            {
+                AnsiConsole.Clear();
+                choice = AnsiConsole.Prompt(
+                    new SelectionPrompt<string> { HighlightStyle = new Style(Color.Green) }
+                        .Title("[red]You Lost :([/]")
+                        .PageSize(3)
+                        .AddChoices("Play Again", "Quit"));
+            }
             if (choice == "Quit") break;
+            AnsiConsole.Cursor.Hide();
         }
     }
 
-    private static void GameLoop()
+    private static async Task GameLoop()
     {
-        var tree = new Tree(5);
+        _cancellationTokenSource = new CancellationTokenSource();
+        var tree = new Tree(TreeHeight);
         foreach (string segment in tree)
         {
-            AnsiConsole.Cursor.SetPosition(0, 0);
-            AnsiConsole.Markup(segment);
-            bool? res = null;
-            while (res == null)
+            lock (_cursorLock)
             {
-                res = Console.ReadKey().Key switch
+                AnsiConsole.Cursor.SetPosition(0, 0);
+                AnsiConsole.Markup(segment);
+                AnsiConsole.Write("\n" + _score);
+            }
+
+            bool? res = null;
+            while (res == null && !_cancellationTokenSource.Token.IsCancellationRequested)
+            {
+                res = (await WaitForKey(_cancellationTokenSource.Token)).Key switch
                 {
                     ConsoleKey.A or ConsoleKey.LeftArrow => tree.CheckMove(Direction.Left),
                     ConsoleKey.D or ConsoleKey.RightArrow => tree.CheckMove(Direction.Right),
                     _ => null
                 };
             }
-            if (!(bool)res) break;
+
+            _score++;
+            if (_currentHealth < 100) _currentHealth++;
+            if ((bool)res && !_cancellationTokenSource.Token.IsCancellationRequested) continue;
+            _progressStopped = true;
+            break;
         }
+    }
+
+    private static async void HealthBar()
+    {
+        while (!_progressStopped)
+        {
+            lock (_cursorLock)
+            {
+                AnsiConsole.Cursor.SetPosition(0, TreeHeightInLines + 2);
+                AnsiConsole.Write(new BreakdownChart()
+                    .HideTagValues()
+                    .HideTags()
+                    .Width(17)
+                    .AddItem(string.Empty, _currentHealth, Color.Red)
+                    .AddItem(string.Empty, 100 - _currentHealth, Color.Grey));
+            }
+            _currentHealth -= 5;
+            if (_currentHealth <= 0)
+            {
+                _progressStopped = true;
+                await _cancellationTokenSource.CancelAsync();
+            }
+            await Task.Delay(TimeSpan.FromSeconds(.8), _cancellationTokenSource.Token);
+        }
+    }
+    
+    private static async Task<ConsoleKeyInfo> WaitForKey(CancellationToken token)
+    {
+        while (!token.IsCancellationRequested) {
+            if (Console.KeyAvailable) {
+                return Console.ReadKey();
+            }
+            await Task.Delay(50, token);
+        }
+        return new ConsoleKeyInfo((char)0, 0, false, false, false);
     }
 }
