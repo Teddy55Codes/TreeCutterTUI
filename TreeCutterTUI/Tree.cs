@@ -7,6 +7,7 @@ public class Tree : IEnumerable<string>
 {
     private int _treeSegmentCount;
     private Direction _characterDirection = Direction.Right;
+    private Direction _lastDirectionalBranch = Direction.None;
     private Queue<(Direction, string)> _treeSegments = new();
     private Random _random = new();
 
@@ -85,34 +86,77 @@ public class Tree : IEnumerable<string>
             _treeSegments.Enqueue((Direction.None, ASCIIArt.TreeSegmentNoBranch));
             return;
         }
+        
         var lastSegmentDirection = _treeSegments.Last().Item1;
         switch (lastSegmentDirection)
         {
             case Direction.None:
-                switch (_random.Next(5))
+                var direction = PickRandomItemWeighted(
+                [
+                    (Direction.None, 25),
+                    (Direction.Left, _lastDirectionalBranch == Direction.Left ? 50 : 25),
+                    (Direction.Right, _lastDirectionalBranch == Direction.Right ? 50 : 25)
+                ]);
+                switch (direction)
                 {
-                    case 0 or 1:
+                    case Direction.Left:
                         _treeSegments.Enqueue((Direction.Left, ASCIIArt.TreeSegmentBranchLeft));
+                        _lastDirectionalBranch = Direction.Left;
                         break;
-                    case 2 or 3:
+                    case Direction.Right:
                         _treeSegments.Enqueue((Direction.Right, ASCIIArt.TreeSegmentBranchRight));
+                        _lastDirectionalBranch = Direction.Right;
                         break;
-                    case 4:
+                    case Direction.None:
                         _treeSegments.Enqueue((Direction.None, ASCIIArt.TreeSegmentNoBranch));
                         break;
                 }
                 break;
             case Direction.Right:
-                _treeSegments.Enqueue(_random.Next(2) == 0 ? (Direction.None, ASCIIArt.TreeSegmentNoBranch) : (Direction.Right, ASCIIArt.TreeSegmentBranchRight));
+                if (_random.Next(2) == 0)
+                {
+                    _treeSegments.Enqueue((Direction.None, ASCIIArt.TreeSegmentNoBranch));
+                }
+                else
+                {
+                    _treeSegments.Enqueue((Direction.Right, ASCIIArt.TreeSegmentBranchRight));
+                    _lastDirectionalBranch = Direction.Right;
+                }
+                
                 break;
             case Direction.Left:
-                _treeSegments.Enqueue(_random.Next(2) == 0 ? (Direction.None, ASCIIArt.TreeSegmentNoBranch) : (Direction.Left, ASCIIArt.TreeSegmentBranchLeft));
+                if (_random.Next(2) == 0)
+                {
+                    _treeSegments.Enqueue((Direction.None, ASCIIArt.TreeSegmentNoBranch));
+                }
+                else
+                {
+                    _treeSegments.Enqueue((Direction.Left, ASCIIArt.TreeSegmentBranchLeft));
+                    _lastDirectionalBranch = Direction.Left;
+                }
                 break;
         }
     }
 
     private void AddNoBranchTreeSegment() => _treeSegments.Enqueue((Direction.None, ASCIIArt.TreeSegmentNoBranch));
 
+    public static T PickRandomItemWeighted<T>(IList<(T Item, int Weight)> items)
+    {
+        if ((items?.Count ?? 0) == 0)
+        {
+            return default;
+        }
+
+        int offset = 0;
+        (T Item, int RangeTo)[] rangedItems = items
+            .OrderBy(item => item.Weight)
+            .Select(entry => (entry.Item, RangeTo: offset += entry.Weight))
+            .ToArray();
+
+        int randomNumber = new Random().Next(items.Sum(item => item.Weight)) + 1;
+        return rangedItems.First(item => randomNumber <= item.RangeTo).Item;
+    }
+    
     public IEnumerator<string> GetEnumerator() => new Enumerator(this);
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
