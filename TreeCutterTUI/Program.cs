@@ -6,6 +6,13 @@ public abstract class Program
 {
     public static void Main()
     {
+        AnsiConsole.Write(
+            new FigletText("Wood Cutter TUI")
+                .Centered()
+                .Color(Color.Gold3_1));
+        Console.ReadKey();
+        AnsiConsole.Clear();
+        
         while (true)
         {
             GameLoop();
