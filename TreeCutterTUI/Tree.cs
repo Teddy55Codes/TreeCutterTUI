@@ -1,20 +1,23 @@
 ﻿using System.Collections;
 using System.Text;
+using TreeCutterTUI.ASCIIArt;
 
 namespace TreeCutterTUI;
 
 public class Tree : IEnumerable<string>
 {
-    private int _treeSegmentCount;
+    private readonly IASCIIArtHandler _asciiArtHandler;
+    private readonly int _treeSegmentCount;
     private Direction _characterDirection = Direction.Right;
     private Direction _lastDirectionalBranch = Direction.None;
     private Queue<(Direction, string)> _treeSegments = new();
     private Random _random = new();
 
-    public Tree(int height)
+    public Tree(int height, IASCIIArtHandler asciiArtHandler)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(height);
         _treeSegmentCount = height;
+        _asciiArtHandler = asciiArtHandler;
         InitTree();
     }
 
@@ -66,13 +69,13 @@ public class Tree : IEnumerable<string>
         switch (lowestSegmentDirection)
         {
             case Direction.Left:
-                stringBuilder.Append(ASCIIArt.TreeSegmentCharacterRightWithBranch);
+                stringBuilder.Append(_asciiArtHandler.TreeSegmentCharacterRightWithBranch);
                 break;
             case Direction.Right:
-                stringBuilder.Append(ASCIIArt.TreeSegmentCharacterLeftWithBranch);
+                stringBuilder.Append(_asciiArtHandler.TreeSegmentCharacterLeftWithBranch);
                 break;
             case Direction.None:
-                stringBuilder.Append(_characterDirection == Direction.Right ? ASCIIArt.TreeSegmentCharacterRight : ASCIIArt.TreeSegmentCharacterLeft);
+                stringBuilder.Append(_characterDirection == Direction.Right ? _asciiArtHandler.TreeSegmentCharacterRight : _asciiArtHandler.TreeSegmentCharacterLeft);
                 break;
         }
         
@@ -83,7 +86,7 @@ public class Tree : IEnumerable<string>
     {
         if (_treeSegments.Count == 0)
         {
-            _treeSegments.Enqueue((Direction.None, ASCIIArt.TreeSegmentNoBranch));
+            _treeSegments.Enqueue((Direction.None, _asciiArtHandler.TreeSegmentNoBranch));
             return;
         }
         
@@ -100,26 +103,26 @@ public class Tree : IEnumerable<string>
                 switch (direction)
                 {
                     case Direction.Left:
-                        _treeSegments.Enqueue((Direction.Left, ASCIIArt.TreeSegmentBranchLeft));
+                        _treeSegments.Enqueue((Direction.Left, _asciiArtHandler.TreeSegmentBranchLeft));
                         _lastDirectionalBranch = Direction.Left;
                         break;
                     case Direction.Right:
-                        _treeSegments.Enqueue((Direction.Right, ASCIIArt.TreeSegmentBranchRight));
+                        _treeSegments.Enqueue((Direction.Right, _asciiArtHandler.TreeSegmentBranchRight));
                         _lastDirectionalBranch = Direction.Right;
                         break;
                     case Direction.None:
-                        _treeSegments.Enqueue((Direction.None, ASCIIArt.TreeSegmentNoBranch));
+                        _treeSegments.Enqueue((Direction.None, _asciiArtHandler.TreeSegmentNoBranch));
                         break;
                 }
                 break;
             case Direction.Right:
                 if (_random.Next(2) == 0)
                 {
-                    _treeSegments.Enqueue((Direction.None, ASCIIArt.TreeSegmentNoBranch));
+                    _treeSegments.Enqueue((Direction.None, _asciiArtHandler.TreeSegmentNoBranch));
                 }
                 else
                 {
-                    _treeSegments.Enqueue((Direction.Right, ASCIIArt.TreeSegmentBranchRight));
+                    _treeSegments.Enqueue((Direction.Right, _asciiArtHandler.TreeSegmentBranchRight));
                     _lastDirectionalBranch = Direction.Right;
                 }
                 
@@ -127,18 +130,18 @@ public class Tree : IEnumerable<string>
             case Direction.Left:
                 if (_random.Next(2) == 0)
                 {
-                    _treeSegments.Enqueue((Direction.None, ASCIIArt.TreeSegmentNoBranch));
+                    _treeSegments.Enqueue((Direction.None, _asciiArtHandler.TreeSegmentNoBranch));
                 }
                 else
                 {
-                    _treeSegments.Enqueue((Direction.Left, ASCIIArt.TreeSegmentBranchLeft));
+                    _treeSegments.Enqueue((Direction.Left, _asciiArtHandler.TreeSegmentBranchLeft));
                     _lastDirectionalBranch = Direction.Left;
                 }
                 break;
         }
     }
 
-    private void AddNoBranchTreeSegment() => _treeSegments.Enqueue((Direction.None, ASCIIArt.TreeSegmentNoBranch));
+    private void AddNoBranchTreeSegment() => _treeSegments.Enqueue((Direction.None, _asciiArtHandler.TreeSegmentNoBranch));
 
     public static T PickRandomItemWeighted<T>(IList<(T Item, int Weight)> items)
     {
