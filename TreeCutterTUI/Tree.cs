@@ -7,16 +7,14 @@ namespace TreeCutterTUI;
 public class Tree : IEnumerable<string>
 {
     private readonly IASCIIArtHandler _asciiArtHandler;
-    private readonly int _treeSegmentCount;
+    private const int TreeSegmentCount = 5;
     private Direction _characterDirection = Direction.Right;
     private Direction _lastDirectionalBranch = Direction.None;
     private Queue<(Direction, string)> _treeSegments = new();
     private Random _random = new();
 
-    public Tree(int height, IASCIIArtHandler asciiArtHandler)
+    public Tree(IASCIIArtHandler asciiArtHandler)
     {
-        ArgumentOutOfRangeException.ThrowIfNegative(height);
-        _treeSegmentCount = height;
         _asciiArtHandler = asciiArtHandler;
         InitTree();
     }
@@ -42,7 +40,7 @@ public class Tree : IEnumerable<string>
     public void InitTree()
     {
         _treeSegments.Clear();
-        for (int i = 0; i < _treeSegmentCount; i++)
+        for (int i = 0; i < TreeSegmentCount; i++)
         {
             AddTreeSegment();
         }
@@ -60,7 +58,7 @@ public class Tree : IEnumerable<string>
         var i = 0;
         foreach (var segment in _treeSegments.Reverse())
         {
-            if (i == _treeSegmentCount-1) break;
+            if (i == TreeSegmentCount-1) break;
             stringBuilder.Append($"{segment.Item2}\n");
             i++;
         }

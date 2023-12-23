@@ -1,11 +1,13 @@
 ﻿using Spectre.Console;
+using TreeCutterTUI.ASCIIArt;
 
 namespace TreeCutterTUI;
 
 public abstract class Program
 {
-    private const int TreeHeight = 5;
-    private static int TreeHeightInLines = TreeHeight * 5;
+    private static IASCIIArtHandler _asciiArtHandler; 
+    private static int _treeWidthInCharacters;
+    private static int _treeHeightInLines;
     private static int _score;
     private static bool _progressStopped;
     private static int _currentHealth;
@@ -14,6 +16,19 @@ public abstract class Program
     
     public static async Task Main()
     {
+        if (Console.WindowWidth >= ASCIIArtLargeHandler.TreeWidthInCharacters && Console.WindowHeight >= ASCIIArtLargeHandler.TreeHeightInLines + 2)
+        {
+            _asciiArtHandler = new ASCIIArtLargeHandler();
+            _treeWidthInCharacters = ASCIIArtLargeHandler.TreeWidthInCharacters;
+            _treeHeightInLines = ASCIIArtLargeHandler.TreeHeightInLines;
+        }
+        else
+        {
+            _asciiArtHandler = new ASCIIArtSmallHandler();
+            _treeWidthInCharacters = ASCIIArtSmallHandler.TreeWidthInCharacters;
+            _treeHeightInLines = ASCIIArtSmallHandler.TreeHeightInLines;
+        }
+        
         AnsiConsole.Cursor.Hide();
         AnsiConsole.Write(
             new FigletText("Wood Cutter TUI")
@@ -47,7 +62,7 @@ public abstract class Program
     private static async Task GameLoop()
     {
         _cancellationTokenSource = new CancellationTokenSource();
-        var tree = new Tree(TreeHeight);
+        var tree = new Tree(_asciiArtHandler);
         foreach (string segment in tree)
         {
             lock (_cursorLock)
@@ -82,11 +97,11 @@ public abstract class Program
         {
             lock (_cursorLock)
             {
-                AnsiConsole.Cursor.SetPosition(0, TreeHeightInLines + 2);
+                AnsiConsole.Cursor.SetPosition(0, _treeHeightInLines + 2);
                 AnsiConsole.Write(new BreakdownChart()
                     .HideTagValues()
                     .HideTags()
-                    .Width(17)
+                    .Width(_treeWidthInCharacters)
                     .AddItem(string.Empty, _currentHealth, Color.Red)
                     .AddItem(string.Empty, 100 - _currentHealth, Color.Grey));
             }
