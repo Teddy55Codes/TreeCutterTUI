@@ -1,9 +1,9 @@
 ﻿namespace TreeCutterTUI.ASCIIArt;
 
-public class ACIIArtSmallHandler : IASCIIArtHandler
+public class ASCIIArtSmallHandler : IASCIIArtHandler
 {
     #region Constants
-    private const string ASCIICharacter = $"{ASCIIArt.CharacterHeadSmall}\n{ASCIIArt.CharacterTorsoSmall}\n{ASCIIArt.CharacterLegsSmall}";
+    private const string ASCIICharacter = $"{ASCIIArt.CharacterHead}\n{ASCIIArt.CharacterTorso}\n{ASCIIArt.CharacterLegs}";
 
     private const string ASCIITreeLayerBranchLeft = ASCIIArt.BranchSmall + ASCIIArt.TrunckSmall + ASCIIArt.NoBranchSmall;
     private const string ASCIITreeLayerBranchRight = ASCIIArt.NoBranchSmall + ASCIIArt.TrunckSmall + ASCIIArt.BranchSmall;
@@ -34,39 +34,42 @@ public class ACIIArtSmallHandler : IASCIIArtHandler
     private const string ASCIITreeSegmentCharacterRight = $"""
                                                            {ASCIITreeLayerNoBranch}
                                                            {ASCIITreeLayerNoBranch}
-                                                           {ASCIIArt.NoBranchSmall}{ASCIIArt.TrunckSmall}  {ASCIIArt.CharacterHeadSmall}
-                                                           {ASCIIArt.NoBranchSmall}{ASCIIArt.TrunckSmall}  {ASCIIArt.CharacterTorsoSmall}
-                                                           {ASCIIArt.NoBranchSmall}{ASCIIArt.TrunckSmall}  {ASCIIArt.CharacterLegsSmall}
+                                                           {ASCIIArt.NoBranchSmall}{ASCIIArt.TrunckSmall}  {ASCIIArt.CharacterHead}
+                                                           {ASCIIArt.NoBranchSmall}{ASCIIArt.TrunckSmall}  {ASCIIArt.CharacterTorso}
+                                                           {ASCIIArt.NoBranchSmall}{ASCIIArt.TrunckSmall}  {ASCIIArt.CharacterLegs}
                                                            """;
     private const string ASCIITreeSegmentCharacterLeft = $"""
                                                           {ASCIITreeLayerNoBranch}
                                                           {ASCIITreeLayerNoBranch}
-                                                          {ASCIIArt.CharacterHeadSmall}  {ASCIIArt.TrunckSmall}{ASCIIArt.NoBranchSmall}
-                                                          {ASCIIArt.CharacterTorsoSmall}  {ASCIIArt.TrunckSmall}{ASCIIArt.NoBranchSmall}
-                                                          {ASCIIArt.CharacterLegsSmall}  {ASCIIArt.TrunckSmall}{ASCIIArt.NoBranchSmall}
+                                                          {ASCIIArt.CharacterHead}  {ASCIIArt.TrunckSmall}{ASCIIArt.NoBranchSmall}
+                                                          {ASCIIArt.CharacterTorso}  {ASCIIArt.TrunckSmall}{ASCIIArt.NoBranchSmall}
+                                                          {ASCIIArt.CharacterLegs}  {ASCIIArt.TrunckSmall}{ASCIIArt.NoBranchSmall}
                                                           """;
     private const string ASCIITreeSegmentCharacterRightWithBranch = $"""
                                                                      {ASCIITreeLayerNoBranch}
                                                                      {ASCIITreeLayerNoBranch}
-                                                                     {ASCIIArt.NoBranchSmall}{ASCIIArt.TrunckSmall}  {ASCIIArt.CharacterHeadSmall}
-                                                                     {ASCIIArt.BranchSmall}{ASCIIArt.TrunckSmall}  {ASCIIArt.CharacterTorsoSmall}
-                                                                     {ASCIIArt.NoBranchSmall}{ASCIIArt.TrunckSmall}  {ASCIIArt.CharacterLegsSmall}
+                                                                     {ASCIIArt.NoBranchSmall}{ASCIIArt.TrunckSmall}  {ASCIIArt.CharacterHead}
+                                                                     {ASCIIArt.BranchSmall}{ASCIIArt.TrunckSmall}  {ASCIIArt.CharacterTorso}
+                                                                     {ASCIIArt.NoBranchSmall}{ASCIIArt.TrunckSmall}  {ASCIIArt.CharacterLegs}
                                                                      """;
     private const string ASCIITreeSegmentCharacterLeftWithBranch = $"""
                                                                     {ASCIITreeLayerNoBranch}
                                                                     {ASCIITreeLayerNoBranch}
-                                                                    {ASCIIArt.CharacterHeadSmall}  {ASCIIArt.TrunckSmall}{ASCIIArt.NoBranchSmall}
-                                                                    {ASCIIArt.CharacterTorsoSmall}  {ASCIIArt.TrunckSmall}{ASCIIArt.BranchSmall}
-                                                                    {ASCIIArt.CharacterLegsSmall}  {ASCIIArt.TrunckSmall}{ASCIIArt.NoBranchSmall}
+                                                                    {ASCIIArt.CharacterHead}  {ASCIIArt.TrunckSmall}{ASCIIArt.NoBranchSmall}
+                                                                    {ASCIIArt.CharacterTorso}  {ASCIIArt.TrunckSmall}{ASCIIArt.BranchSmall}
+                                                                    {ASCIIArt.CharacterLegs}  {ASCIIArt.TrunckSmall}{ASCIIArt.NoBranchSmall}
                                                                     """;
     #endregion
-    
+
+    public static int TreeHeight => 5;
+    public static int TreeHeightInLines => 25; // TreeHeight * 5
+    public static int TreeWidthInCharacters => 17;
     public string Trunck => ASCIIArt.TrunckSmall;
     public string Branch => ASCIIArt.BranchSmall;
     public string NoBranch => ASCIIArt.NoBranchSmall;
-    public string CharacterHead => ASCIIArt.CharacterHeadSmall;
-    public string CharacterTorso => ASCIIArt.CharacterTorsoSmall;
-    public string CharacterLegs => ASCIIArt.CharacterLegsSmall;
+    public string CharacterHead => ASCIIArt.CharacterHead;
+    public string CharacterTorso => ASCIIArt.CharacterTorso;
+    public string CharacterLegs => ASCIIArt.CharacterLegs;
     public string Character => ASCIICharacter;
     public string TreeLayerBranchLeft => ASCIITreeLayerBranchLeft;
     public string TreeLayerBranchRight => ASCIITreeLayerBranchRight;
