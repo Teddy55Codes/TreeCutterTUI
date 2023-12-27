@@ -9,10 +9,9 @@ public abstract class Program
     private static int _treeWidthInCharacters;
     private static int _treeHeightInLines;
     private static int _score;
-    private static bool _progressStopped;
     private static int _currentHealth;
     private static object _cursorLock = new();
-    private static CancellationTokenSource _cancellationTokenSource;
+    private static CancellationTokenSource? _cancellationTokenSource;
     
     public static async Task Main()
     {
@@ -40,8 +39,8 @@ public abstract class Program
         while (true)
         {
             _score = 0;
-            _progressStopped = false;
             _currentHealth = 100;
+            _cancellationTokenSource = new CancellationTokenSource();
             Task.Run(HealthBar);
             await GameLoop();
             string choice;
@@ -61,7 +60,6 @@ public abstract class Program
 
     private static async Task GameLoop()
     {
-        _cancellationTokenSource = new CancellationTokenSource();
         var tree = new Tree(_asciiArtHandler);
         foreach (string segment in tree)
         {
@@ -97,7 +95,7 @@ public abstract class Program
 
     private static async void HealthBar()
     {
-        while (!_progressStopped)
+        while (!_cancellationTokenSource.Token.IsCancellationRequested)
         {
             lock (_cursorLock)
             {
@@ -112,10 +110,14 @@ public abstract class Program
             _currentHealth -= 5;
             if (_currentHealth <= 0)
             {
-                _progressStopped = true;
                 await _cancellationTokenSource.CancelAsync();
             }
-            await Task.Delay(TimeSpan.FromSeconds(.8), _cancellationTokenSource.Token);
+
+            try
+            {
+                await Task.Delay(TimeSpan.FromSeconds(.8), _cancellationTokenSource.Token);
+            }
+            catch (TaskCanceledException) { }
         }
     }
     
@@ -125,7 +127,12 @@ public abstract class Program
             if (Console.KeyAvailable) {
                 return Console.ReadKey(true);
             }
-            await Task.Delay(50, token);
+
+            try
+            {
+                await Task.Delay(50, token);
+            }
+            catch (TaskCanceledException) { }
         }
         return new ConsoleKeyInfo((char)0, 0, false, false, false);
     }
