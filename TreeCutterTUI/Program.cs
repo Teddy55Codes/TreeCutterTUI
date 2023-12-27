@@ -7,7 +7,6 @@ public abstract class Program
 {
     private static IASCIIArtHandler _asciiArtHandler; 
     private static int _treeWidthInCharacters;
-    private static int _treeHeightInLines;
     private static int _score;
     private static int _currentHealth;
     private static object _cursorLock = new();
@@ -19,13 +18,11 @@ public abstract class Program
         {
             _asciiArtHandler = new ASCIIArtLargeHandler();
             _treeWidthInCharacters = ASCIIArtLargeHandler.TreeWidthInCharacters;
-            _treeHeightInLines = ASCIIArtLargeHandler.TreeHeightInLines;
         }
         else
         {
             _asciiArtHandler = new ASCIIArtSmallHandler();
             _treeWidthInCharacters = ASCIIArtSmallHandler.TreeWidthInCharacters;
-            _treeHeightInLines = ASCIIArtSmallHandler.TreeHeightInLines;
         }
         
         AnsiConsole.Clear();
@@ -48,11 +45,19 @@ public abstract class Program
             lock (_cursorLock)
             {
                 AnsiConsole.Clear();
+                AnsiConsole.Write(
+                    new FigletText("You Lost")
+                        .LeftJustified()
+                        .Color(Color.Red));
+                AnsiConsole.Write(
+                    new FigletText($"Score:  {_score}")
+                        .LeftJustified()
+                        .Color(Color.Yellow));
                 choice = AnsiConsole.Prompt(
                     new SelectionPrompt<string> { HighlightStyle = new Style(Color.Green) }
-                        .Title($"[red]You Lost :([/]\n[yellow]Score: {_score}[/]")
                         .PageSize(3)
                         .AddChoices("Play Again", "Quit"));
+                AnsiConsole.Clear();
             }
             if (choice == "Quit") break;
             AnsiConsole.Cursor.Hide();
