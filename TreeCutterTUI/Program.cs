@@ -50,7 +50,7 @@ public abstract class Program
                 AnsiConsole.Clear();
                 choice = AnsiConsole.Prompt(
                     new SelectionPrompt<string> { HighlightStyle = new Style(Color.Green) }
-                        .Title("[red]You Lost :([/]")
+                        .Title($"[red]You Lost :([/]\n[yellow]Score: {_score}[/]")
                         .PageSize(3)
                         .AddChoices("Play Again", "Quit"));
             }
@@ -83,10 +83,14 @@ public abstract class Program
                 };
             }
 
-            _score++;
-            if (_currentHealth < 100) _currentHealth++;
-            if ((bool)res && !_cancellationTokenSource.Token.IsCancellationRequested) continue;
-            _progressStopped = true;
+            if (!_cancellationTokenSource.Token.IsCancellationRequested)
+            {
+                _score++;
+                if (_currentHealth < 100) _currentHealth++;
+                if (res is true) continue;
+            }
+            
+            await _cancellationTokenSource.CancelAsync();
             break;
         }
     }
