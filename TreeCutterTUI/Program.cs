@@ -66,9 +66,10 @@ public abstract class Program
         {
             lock (_cursorLock)
             {
-                AnsiConsole.Cursor.SetPosition(0, 0);
+                AnsiConsole.Cursor.SetPosition(_treeWidthInCharacters - _score.ToString().Length + 1, 1);
+                AnsiConsole.WriteLine(_score);
+                AnsiConsole.Cursor.SetPosition(0, 3);
                 AnsiConsole.Markup(segment);
-                AnsiConsole.Write("\n" + _score);
             }
 
             bool? res = null;
@@ -100,7 +101,7 @@ public abstract class Program
         {
             lock (_cursorLock)
             {
-                AnsiConsole.Cursor.SetPosition(0, _treeHeightInLines + 2);
+                AnsiConsole.Cursor.SetPosition(0, 2);
                 AnsiConsole.Write(new BreakdownChart()
                     .HideTagValues()
                     .HideTags()
