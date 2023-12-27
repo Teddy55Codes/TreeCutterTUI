@@ -119,7 +119,7 @@ public abstract class Program
     {
         while (!token.IsCancellationRequested) {
             if (Console.KeyAvailable) {
-                return Console.ReadKey();
+                return Console.ReadKey(true);
             }
             await Task.Delay(50, token);
         }
