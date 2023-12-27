@@ -28,6 +28,7 @@ public abstract class Program
             _treeHeightInLines = ASCIIArtSmallHandler.TreeHeightInLines;
         }
         
+        AnsiConsole.Clear();
         AnsiConsole.Cursor.Hide();
         AnsiConsole.Write(
             new FigletText("Wood Cutter TUI")
