@@ -28,7 +28,7 @@ public abstract class Program
         AnsiConsole.Clear();
         AnsiConsole.Cursor.Hide();
         AnsiConsole.Write(
-            new FigletText("Wood Cutter TUI")
+            new FigletText("TreeCutter TUI")
                 .Centered()
                 .Color(Color.Gold3_1));
         Console.ReadKey();
