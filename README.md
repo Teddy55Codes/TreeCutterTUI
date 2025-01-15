@@ -9,3 +9,9 @@
 # TreeCutter TUI
 TreeCutter TUI is a NativeAOT compatible C# console app version of the classic mobile game [Timberman](https://play.google.com/store/apps/details?id=com.dm.timber).
 My main motivation for this project was to test out NativeAOT compilation. 
+
+## Screenshots
+<div>
+    <img src="images/gameplay.png" alt="TreeCutter TUI gameplay screenshot" style="float: left; margin-right: 10px;">
+    <img src="images/gameover.png" alt="Game over screen" style="float: left;">
+</div>
